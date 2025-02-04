@@ -1,3 +1,4 @@
+// swiftlint:disable all
 //
 // Resolver.swift
 //
@@ -133,7 +134,12 @@ public final class Resolver {
     ///
     @discardableResult
     public static func register<Service>(_ type: Service.Type = Service.self, name: Resolver.Name? = nil,
-                                         factory: @escaping ResolverFactory<Service>) -> ResolverOptions<Service> {
+                                         factory: @escaping ResolverFactorySendable<Service>) -> ResolverOptions<Service> {
+        return main.register(type, name: name, factory: factory)
+    }
+
+    @discardableResult
+    public static func registerMainActorOnly<Service>(_ type: Service.Type = Service.self, name: Resolver.Name? = nil, factory: @escaping ResolverFactory<Service>) -> ResolverOptions<Service> {
         return main.register(type, name: name, factory: factory)
     }
 
@@ -464,6 +470,7 @@ private func registrationCheck() {
 }
 
 public typealias ResolverFactory<Service> = () -> Service?
+public typealias ResolverFactorySendable<Service> = @Sendable () -> Service?
 public typealias ResolverFactoryResolver<Service> = (_ resolver: Resolver) -> Service?
 public typealias ResolverFactoryArgumentsN<Service> = (_ resolver: Resolver, _ args: Resolver.Args) -> Service?
 public typealias ResolverFactoryAnyArguments<Service> = (_ resolver: Resolver, _ args: Any?) -> Service?
